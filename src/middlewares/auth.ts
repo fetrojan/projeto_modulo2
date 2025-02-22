@@ -2,15 +2,11 @@ import { NextFunction, Request, Response } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
 import AppError from "../utils/AppError";
 
-type dataJwt = JwtPayload & { userId: string };
-
-export interface AuthRequest extends Request {
-  userId: string;
-}
+type dataJwt = JwtPayload & { userId: string, profile: string };
 
 export
 const verifyToken = (
-  req: Request & { userId: string },
+  req: Request,
   _res: Response,
   next: NextFunction
 ) => {
@@ -23,7 +19,9 @@ const verifyToken = (
 
     const data = jwt.verify(token, process.env.JWT_SECRET ?? "") as dataJwt
 
-    req.userId = data.userId
+    req.userId = Number(data.userId)
+    req.profile = data.profile
+
 
     next();
   } catch (error) {
