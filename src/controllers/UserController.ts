@@ -66,6 +66,14 @@ class UserController {
         throw new AppError("CNPJ inválido", 400);
       }
 
+      const existingDocument = await this.driverRepository.findOne({
+        where: { document: userBody.document },
+      });
+
+      if (existingDocument) {
+        throw new AppError("Este documento já está cadastrado", 409);
+      }
+
       const existingUser = await this.userRepository.findOne({
         where: { email: userBody.email },
       });
@@ -85,13 +93,13 @@ class UserController {
 
       if (user.profile === UserProfile.DRIVER) {
         await this.driverRepository.save({
-          user_id: user.id,
+          user,
           full_address: userBody.full_address,
           document: userBody.document,
         });
       } else if (user.profile === UserProfile.BRANCH) {
         await this.branchRepository.save({
-          user_id: user.id,
+          user,
           full_address: userBody.full_address,
           document: userBody.document,
         });

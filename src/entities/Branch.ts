@@ -6,7 +6,7 @@ export class Branch {
     @PrimaryGeneratedColumn()
     id: number
 
-    @Column({length: 255})
+    @Column({length: 255, nullable: true})
     full_address: string
 
     @Column({nullable: false, length: 18, unique: true})

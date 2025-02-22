@@ -3,9 +3,9 @@ import { Branch } from "./Branch"
 import { Driver } from "./Driver"
 
 export enum UserProfile {
-  ADMIN,
-  DRIVER,
-  BRANCH
+  ADMIN = "ADMIN",
+  DRIVER = "DRIVER",
+  BRANCH = "BRANCH"
 }
 
 @Entity("users")

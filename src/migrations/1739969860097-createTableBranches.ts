@@ -17,6 +17,7 @@ export class CreateTableBranches1739969860097 implements MigrationInterface {
                     name: 'full_address',
                     type: 'varchar',
                     length: '255',
+                    isNullable: true,
                 },
                 {
                     name: 'document',
