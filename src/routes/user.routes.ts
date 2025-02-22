@@ -8,6 +8,7 @@ const userRouter = Router();
 const userController = new UserController();
 
 userRouter.post("/", verifyToken, isAdmin, userController.create);
+userRouter.get("/", verifyToken, isAdmin, userController.getAll)
 
 
 export default userRouter;

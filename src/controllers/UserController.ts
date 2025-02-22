@@ -110,6 +110,27 @@ class UserController {
       next(error);
     }
   };
+
+  getAll = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      let profile = req.query.profile as UserProfile
+
+      if(!!profile && !Object.values(UserProfile).includes(profile)) {
+        throw new AppError("Valor inválido para a query", 400)
+      }
+
+      let users = [] as User[]
+
+      if(!!profile) {
+        users = await this.userRepository.find({where: {profile : profile}, select: ["id", "name", "status", "profile"]})
+      } else {
+        users = await this.userRepository.find({select: ["id", "name", "status", "profile"]})
+      }
+      res.status(200).json(users)
+    } catch(error) {
+      next(error)
+    }
+  }
 }
 
 export default UserController;
