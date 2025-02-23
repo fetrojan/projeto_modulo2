@@ -169,6 +169,65 @@ class UserController {
       next(error);
     }
   };
+
+  updateUser = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = Number(req.params.id)
+      const requestingUser = req.profile
+      const userLoggedId = req.userId
+
+      const user = await this.userRepository.findOne({
+        where: { id: Number(userId)},
+        relations: ["driver"]
+      })
+
+      if (!user) {
+        throw new AppError("Usuário não encontrado", 404)
+      }
+
+      const isAdmin = requestingUser === UserProfile.ADMIN
+      const isDriverUpdatingOwnProfile = requestingUser === UserProfile.DRIVER && userLoggedId === userId
+
+      if(!isAdmin && !isDriverUpdatingOwnProfile) {
+        throw new AppError("Você não tem permissão para acessar este recurso", 401)
+      }
+
+      const forbiddenFields = ["id", "created_at", "profile", "updated_at", "status"]
+
+      const foundFields = forbiddenFields.filter(field => field in req.body)
+
+      if(foundFields.length > 0) {
+        throw new AppError(`Os campos ${foundFields.join(", ")} não podem ser atualizados`, 400)
+      }
+
+      const { name, email, password, full_address } = req.body
+
+      if(name) user.name = name
+      if(email) {
+        const existingUser = await this.userRepository.findOne({ where: { email }})
+        if(existingUser) {
+          throw new AppError("Este e-mail já está cadastrado", 409)
+        }
+        user.email = email
+      }
+      if(password) {
+        const hashedPassword = await bcrypt.hash(password, 10)
+        user.password = hashedPassword
+      }
+
+      await this.userRepository.save(user)
+
+      if(full_address && user.profile === UserProfile.DRIVER) {
+        user.driver.full_address = full_address
+        await this.driverRepository.save(user.driver)
+      }
+
+      res.status(200).json(user)
+
+    } catch (error) {
+      next(error);
+    }
+  }
 }
 
 export default UserController;
