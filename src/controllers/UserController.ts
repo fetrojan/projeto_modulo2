@@ -9,6 +9,7 @@ import AppError from "../utils/AppError";
 import bcrypt from "bcrypt";
 import { validate as validateCPF } from "cpf-check";
 import { cnpj as validateCNPJ } from "cpf-cnpj-validator";
+import { UserResponseDTO } from "../dtos/UserReponseDTO";
 
 class UserController {
   private userRepository;
@@ -113,24 +114,61 @@ class UserController {
 
   getAll = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      let profile = req.query.profile as UserProfile
+      let profile = req.query.profile as UserProfile;
 
-      if(!!profile && !Object.values(UserProfile).includes(profile)) {
-        throw new AppError("Valor inválido para a query", 400)
+      if (!!profile && !Object.values(UserProfile).includes(profile)) {
+        throw new AppError("Valor inválido para a query", 400);
       }
 
-      let users = [] as User[]
+      let users = [] as User[];
 
-      if(!!profile) {
-        users = await this.userRepository.find({where: {profile : profile}, select: ["id", "name", "status", "profile"]})
+      if (!!profile) {
+        users = await this.userRepository.find({
+          where: { profile: profile },
+          select: ["id", "name", "status", "profile"],
+        });
       } else {
-        users = await this.userRepository.find({select: ["id", "name", "status", "profile"]})
+        users = await this.userRepository.find({
+          select: ["id", "name", "status", "profile"],
+        });
       }
-      res.status(200).json(users)
-    } catch(error) {
-      next(error)
+      res.status(200).json(users);
+    } catch (error) {
+      next(error);
     }
-  }
+  };
+
+  getById = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = req.params.id;
+      const requestingUser = req.profile;
+
+      const user = await this.userRepository.findOne({
+        where: { id: Number(userId) },
+        relations: ["driver", "branch"],
+      });
+
+      if (!user) {
+        throw new AppError("Usuário não encontrado", 404);
+      }
+      const userResponse = new UserResponseDTO(user)
+
+      if (
+        requestingUser === UserProfile.ADMIN ||
+        (requestingUser === UserProfile.DRIVER && req.userId === Number(userId))
+      ) {
+        res.status(200).json(userResponse);
+        return;
+      }
+
+      throw new AppError(
+        "Você não tem permissão para acessar este recurso",
+        401
+      );
+    } catch (error) {
+      next(error);
+    }
+  };
 }
 
 export default UserController;

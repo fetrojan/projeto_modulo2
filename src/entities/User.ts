@@ -1,4 +1,4 @@
-import {Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, UpdateDateColumn, CreateDateColumn} from "typeorm"
+import {Entity, PrimaryGeneratedColumn, Column, OneToOne, UpdateDateColumn, CreateDateColumn} from "typeorm"
 import { Branch } from "./Branch"
 import { Driver } from "./Driver"
 

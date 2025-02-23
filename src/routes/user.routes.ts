@@ -9,6 +9,6 @@ const userController = new UserController();
 
 userRouter.post("/", verifyToken, isAdmin, userController.create);
 userRouter.get("/", verifyToken, isAdmin, userController.getAll)
-
+userRouter.get("/:id", verifyToken, userController.getById)
 
 export default userRouter;
