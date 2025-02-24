@@ -21,15 +21,10 @@ class ProductController {
     create = async (req: Request, res: Response, next: NextFunction) => {
         try {
             const productBody = req.body as CreateProductDTO
-            const requestingUser = req.profile
             const userId = req.userId
             
             if (!productBody.name || !productBody.amount || !productBody.description) {
                 throw new AppError("Os campos name, amount e description são obrigatórios", 400)
-            }
-
-            if (requestingUser !== UserProfile.BRANCH) {
-                throw new AppError("Somente usuários do tipo BRANCH podem criar produtos", 401)
             }
 
             const currentBranch = await this.branchRepository.findOne({ where: {user :{id : userId}}, relations: ["user"] })
@@ -50,6 +45,27 @@ class ProductController {
 
             res.status(201).json(new ProductResponseDTO(product));
 
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getAll = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const userId = req.userId
+
+            const currentBranch = await this.branchRepository.findOne({ where: {user :{id : userId}}, relations: ["products"]})
+
+            if (!currentBranch) {
+                throw new AppError("Branch não encontrada", 404)    
+            }
+
+            if (!currentBranch.products || currentBranch.products.length === 0) {
+                res.status(200).json({ message: "Nenhum produto cadastrado para esta filial." });
+                return
+            }
+
+            res.status(200).json(currentBranch.products)
         } catch (error) {
             next(error)
         }
