@@ -228,6 +228,28 @@ class UserController {
       next(error);
     }
   }
+
+  updateStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userId = Number(req.params.id)
+
+      const user = await this.userRepository.findOne({
+        where: { id: userId }
+      })
+
+      if(!user) {
+        throw new AppError("Usuário não encontrado", 404)
+      }
+
+      user.status = !user.status
+
+      await this.userRepository.save(user)
+
+      res.status(200).json({ message: "Status atualizado com sucesso" })
+    } catch (error) {
+      next(error)
+    }
+  }
 }
 
 export default UserController;
