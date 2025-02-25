@@ -5,12 +5,15 @@ import { Driver } from "../entities/Driver";
 import { Movement, MovementStatus } from "../entities/Movement";
 import { Product } from "../entities/Product";
 import AppError from "../utils/AppError";
+import { User, UserProfile } from "../entities/User";
+import { MovementDTO } from "../dtos/MovementDTO";
 
 class MovementController {
     private movementRepository
     private branchRepository
     private productRepository
     private driverRepository
+    private userRepository
 
 
     constructor() {
@@ -18,6 +21,7 @@ class MovementController {
         this.branchRepository = AppDataSource.getRepository(Branch);
         this.productRepository = AppDataSource.getRepository(Product);
         this.driverRepository = AppDataSource.getRepository(Driver);
+        this.userRepository = AppDataSource.getRepository(User);
     }
 
     create = async (req: Request, res: Response, next: NextFunction) => {
@@ -83,6 +87,58 @@ class MovementController {
             await this.movementRepository.save(movement);
 
             res.status(201).json({ message: "Movimentação registrada com sucesso", movement });
+
+        } catch (error) {
+            next(error)
+        }
+    }
+
+    getAll = async (req: Request, res: Response, next: NextFunction) => {
+        try {
+            const profile = req.profile
+            const userId = req.userId
+
+            if(profile !== UserProfile.BRANCH && profile !== UserProfile.DRIVER) {
+                throw new AppError("Apenas motoristas e filiais podem acessar essa rota", 403)
+            }
+
+            const movements = await this.movementRepository.find({
+                    where: { destination_branch: { user: { id: userId } } },
+                    select: {
+                        id: true,
+                        quantity: true,
+                        status: true,
+                        created_at: true,
+                        updated_at: true,
+                        product: {
+                            id: true,
+                            name: true,
+                            description: true
+                        },
+                        destination_branch: {
+                            id: true,
+                        }
+                    },
+                    relations: ["product", "destination_branch"]
+                });
+            
+                const response: MovementDTO[] = movements.map(movement => ({
+                    id: movement.id,
+                    quantity: movement.quantity,
+                    status: movement.status,
+                    created_at: movement.created_at,
+                    updated_at: movement.updated_at,
+                    product: movement.product
+                        ? {
+                            id: movement.product.id,
+                            name: movement.product.name,
+                            description: movement.product.description
+                        }
+                        : null,
+                    destination_branch_id: movement.destination_branch?.id ?? null
+                }));
+
+            res.status(200).json(response)
 
         } catch (error) {
             next(error)

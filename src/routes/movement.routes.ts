@@ -8,5 +8,6 @@ const movementRouter = Router();
 const movementController = new MovementController();
 
 movementRouter.post("/", verifyToken, isBranch, movementController.create);
+movementRouter.get("/", verifyToken, movementController.getAll);
 
 export default movementRouter;
