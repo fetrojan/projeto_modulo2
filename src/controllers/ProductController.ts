@@ -1,19 +1,16 @@
 import { Request, Response, NextFunction } from "express";
 import { AppDataSource } from "../data-source";
 import { Product } from "../entities/Product";
-import { User, UserProfile } from "../entities/User";
 import { CreateProductDTO } from "../dtos/CreateProductDTO";
 import AppError from "../utils/AppError";
 import { Branch } from "../entities/Branch";
 import { ProductResponseDTO } from "../dtos/ProductResponseDTO";
 
 class ProductController {
-    private userRepository
     private productRepository
     private branchRepository
 
     constructor() {
-        this.userRepository = AppDataSource.getRepository(User);
         this.productRepository = AppDataSource.getRepository(Product);
         this.branchRepository = AppDataSource.getRepository(Branch);
     }

@@ -8,6 +8,7 @@ import cors from "cors";
 
 import userRouter from "./routes/user.routes";
 import productRouter from "./routes/product.routes";
+import movementRouter from "./routes/movement.routes";
 
 import { handleError } from "./middlewares/handleError";
 
@@ -23,6 +24,7 @@ app.use(express.json()); // Permite que o express entenda JSON
 app.use("/users", userRouter);
 app.use("/login", authRouter);
 app.use("/products", productRouter)
+app.use("/movements", movementRouter)
 
 app.get("/env", (req, res) => {
   res.json({
