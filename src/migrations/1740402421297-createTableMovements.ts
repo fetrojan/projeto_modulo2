@@ -24,6 +24,11 @@ export class CreateTableMovements1740402421297 implements MigrationInterface {
                     isNullable: false
                 },
                 {
+                    name: "driver_id",
+                    type: "int",
+                    isNullable: true
+                },
+                {
                     name: "quantity",
                     type: "int",
                     isNullable: false
@@ -57,6 +62,12 @@ export class CreateTableMovements1740402421297 implements MigrationInterface {
             columnNames: ["product_id"],
             referencedColumnNames: ["id"],
             referencedTableName: "products"
+        }))
+
+        await queryRunner.createForeignKey("movements", new TableForeignKey({
+            columnNames: ["driver_id"],
+            referencedColumnNames: ["id"],
+            referencedTableName: "drivers"
         }))
     }
 

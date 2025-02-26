@@ -1,6 +1,7 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Branch } from "./Branch";
 import { Product } from "./Product";
+import { Driver } from "./Driver";
 
 export enum MovementStatus {
     PENDING = 'PENDING',
@@ -32,4 +33,8 @@ export class Movement {
     @ManyToOne(() => Product, product => product.movements)
     @JoinColumn({name: 'product_id' })
     product: Product
+
+    @ManyToOne(() => Driver, driver => driver.movements)
+    @JoinColumn({name: 'driver_id'})
+    driver: Driver
 }

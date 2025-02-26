@@ -2,7 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { UserProfile } from "../entities/User";
 import AppError from "../utils/AppError";
 
-export const isBranch = (req:Request, res:Response, next:NextFunction) => {
+export const isDriver = (req:Request, res:Response, next:NextFunction) => {
     const profile = req.profile
    
     if(!profile) {
