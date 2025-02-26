@@ -231,6 +231,57 @@ class MovementController {
       next(error);
     }
   };
+
+    updateStatusFinish = async ( req:Request, res: Response, next: NextFunction) => {
+        try {
+            const movementId = Number(req.params.id);
+            const userId = req.userId;
+
+            const movement = await this.movementRepository.findOne({
+                where: { id: movementId},
+                relations: ["product", "destination_branch", "driver", "driver.user"]
+            })
+
+            if(!movement) {
+                throw new AppError("Movimentação não encontrada", 404)
+            }
+
+            if(movement.status === MovementStatus.PENDING) {
+                throw new AppError("Movimentação não foi iniciada", 400)
+            }
+
+            if(movement.status === MovementStatus.FINISHED) {
+                throw new AppError("Movimentação já foi finalizada", 400)
+            }
+
+            if(movement.driver.user.id !== userId) {
+                throw new AppError("Você não tem permissão para finalizar essa movimentação", 403)
+            }
+
+            movement.status = MovementStatus.FINISHED
+            await this.movementRepository.save(movement)
+
+            const movementResponse = new MovementResponseDTO(
+                movement.id,
+                movement.quantity,
+                movement.status,
+                movement.created_at,
+                movement.updated_at,
+                movement.product ? {
+                    id: movement.product.id,
+                    name: movement.product.name,
+                    description: movement.product.description
+                } : null,
+                movement.destination_branch ? movement.destination_branch.id : null,
+                movement.driver ? { id: movement.driver.id, name: movement.driver.user.name } : null
+            )
+
+            res.status(200).json({ message: "Movimentação finalizada com sucesso", movement: movementResponse })
+
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default MovementController;
