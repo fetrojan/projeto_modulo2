@@ -1,8 +1,8 @@
-📦 PharmaFlow
+# 📦 PharmaFlow
 
 Este projeto faz parte da evolução do protótipo do app da PharmaFlow, trazendo agora uma API Restful para otimizar a gestão das movimentações de produtos entre filiais. O backend desenvolvido permite o processamento eficiente de dados, trabalahndo com gerenciamento de usuários, produtos e movimentações.
 
-🚀 Tecnologias Utilizadas
+## 🚀 Tecnologias Utilizadas
 
 Linguagem: TypeScript
 
@@ -16,7 +16,7 @@ Autenticação: JWT
 
 Bibliotecas adicionais: bcrypt, winston, cpf-check, cpf-cnpj-validator
 
-📖 Funcionalidades
+## 📖 Funcionalidades
 
 ✅ Autenticação e controle de acesso
 
@@ -27,9 +27,9 @@ Bibliotecas adicionais: bcrypt, winston, cpf-check, cpf-cnpj-validator
 ✅ Controle de status da movimentação
 
 
-🛠️ Como Executar o Projeto
+## 🛠️ Como Executar o Projeto
 
-🔧 Pré-requisitos
+🔧 **Pré-requisitos**
 
 Antes de iniciar, você precisará ter instalado em sua máquina:
 
@@ -39,29 +39,29 @@ PostgreSQL
 
 Um gerenciador de pacotes como npm ou yarn
 
-📥 Clonar ou baixar o repositório
+📥 **Clonar ou baixar o repositório**
 
-📦 Instalando as Dependências
+📦 **Instalando as Dependências**
 
 npm install  # ou yarn install
 
-🔧 Configuração do Banco de Dados
+🔧 **Configuração do Banco de Dados**
 
 Configure o arquivo .env com as credenciais do PostgreSQL.
 
-Execute as migrations:
+**Execute as migrations:**
 
 npm run typeorm migration:run  # ou yarn typeorm migration:run
 
-▶️ Rodando o Servidor
+**▶️ Rodando o Servidor**
 
 npm run start  # ou yarn start
 
-🏗️ Melhorias Futuras
+## 🏗️ Melhorias Futuras
 
 🔹 Implementação de testes automatizados
 
 🔹 Melhorias na interface de administração
 
 
-✍️ **Criado por **Felipe R. Trojan 🚀
+✍️ Criado por **Felipe R. Trojan** 🚀
